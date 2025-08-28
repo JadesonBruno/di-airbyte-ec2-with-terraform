@@ -3,12 +3,12 @@ resource "aws_security_group" "airbyte" {
   description = "Security group for Airbyte EC2 instance"
   vpc_id = var.vpc_id
 
-  ingress = {
+  ingress {
     description = "Allow SSH access"
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_block = var.allow_ips
+    cidr_blocks = var.allow_ips
   }
 
   ingress {
