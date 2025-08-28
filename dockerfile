@@ -9,7 +9,8 @@ RUN apt-get update && \
     apt-get install -y \
         wget \
         unzip \
-        curl && \
+        curl \
+        vim && \
     rm -rf /var/lib/apt/lists/*
 
 # Defining the Terraform version
