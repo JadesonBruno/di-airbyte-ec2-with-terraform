@@ -16,15 +16,15 @@ data "aws_ami" "amazon_linux" {
 
 
 # Key Pair para SSH (gera chave automaticamente)
-resource "tls_private_key" "airbyte_tls_private_key" {
+resource "tls_private_key" "airbyte" {
   algorithm = "RSA"
   rsa_bits = 4096
 }
 
 
-resource "aws_key_pair" "airbyte_key_pair" {
+resource "aws_key_pair" "airbyte" {
   key_name   = "${var.project_name}-${var.environment}-airbyte-key"
-  public_key = tls_private_key.airbyte_tls_private_key.public_key_openssh
+  public_key = tls_private_key.airbyte.public_key_openssh
 
   tags = {
     Name = "${var.project_name}-${var.environment}-airbyte-key"
@@ -36,11 +36,22 @@ resource "aws_key_pair" "airbyte_key_pair" {
 }
 
 
+# Salvar chave privada localmente
+resource "local_file" "private_key" {
+  content = tls_private_key.airbyte.private_key_pem
+  filename = "${path.root}/keys/${var.project_name}-${var.environment}-airbyte-key.pem"
+
+  provisioner "local-exec" {
+    command = "chmod 400 ${path.root}/keys/${var.project_name}-${var.environment}-airbyte-key.pem"
+  }
+}
+
+
 # Resource for the EC2 instance
 resource "aws_instance" "airbyte-ec2" {
   ami = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
-  key_name = aws_key_pair.airbyte_key_pair.key_name
+  key_name = aws_key_pair.airbyte.key_name
   subnet_id = var.public_subnet_ids[0]
   vpc_security_group_ids = [aws_security_group.airbyte.id]
   iam_instance_profile = aws_iam_instance_profile.airbyte.name
