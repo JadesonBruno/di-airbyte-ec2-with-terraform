@@ -25,9 +25,8 @@ resource "aws_iam_role" "airbyte" {
 }
 
 
-resource "aws_iam_role_policy" "airbyte" {
+resource "aws_iam_policy" "airbyte" {
   name = "${var.project_name}-${var.environment}-airbyte-policy"
-  role = aws_iam_role.airbyte.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -47,12 +46,20 @@ resource "aws_iam_role_policy" "airbyte" {
       }
     ]
   })
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-airbyte-policy"
+    Project = var.project_name
+    Environment = var.environment
+    Service = "airbyte"
+    Terraform = "true"
+  }
 }
 
 
 resource "aws_iam_role_policy_attachment" "airbyte" {
-  role = aws_iam_role.airbyte.id
-  policy_arn = aws_iam_role_policy.airbyte.arn
+  role = aws_iam_role.airbyte.name
+  policy_arn = aws_iam_policy.airbyte.arn
 }
 
 
