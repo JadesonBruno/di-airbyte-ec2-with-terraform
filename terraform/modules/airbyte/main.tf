@@ -40,7 +40,7 @@ resource "aws_key_pair" "airbyte_key_pair" {
 resource "aws_instance" "airbyte-ec2" {
   ami = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
-  key_name = aws_key_pair.airbyte-key-pair.key_name
+  key_name = aws_key_pair.airbyte_key_pair.key_name
   subnet_id = var.public_subnet_ids[0]
   vpc_security_group_ids = [aws_security_group.airbyte.id]
   iam_instance_profile = aws_iam_instance_profile.airbyte.name
