@@ -41,8 +41,8 @@ resource "aws_iam_role_policy" "airbyte" {
           "s3:DeleteObject"
         ]
         Resource = [
-          "arn:aws:s3:::${aws_s3_bucket.staging.id}",
-          "arn:aws:s3:::${aws_s3_bucket.staging.id}/*"
+          var.staging_area_bucket_arn,
+          "${var.staging_area_bucket_arn}/*"
         ]
       }
     ]

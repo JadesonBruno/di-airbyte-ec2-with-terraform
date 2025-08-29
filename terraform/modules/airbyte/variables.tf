@@ -41,3 +41,8 @@ variable "allow_ips" {
   description = "List of IPs allowed to access the Airbyte Web UI"
   type = list(string)
 }
+
+variable "staging_area_bucket_arn" {
+  description = "The ARN of the S3 bucket used as staging area"
+  type  = string
+}
