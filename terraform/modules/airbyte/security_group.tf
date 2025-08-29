@@ -43,7 +43,7 @@ resource "aws_security_group" "airbyte" {
     cidr_blocks = var.allow_ips
   }
 
-  egress = {
+  egress {
     description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
