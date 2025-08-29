@@ -36,10 +36,10 @@ resource "aws_internet_gateway" "main" {
 
 # Public Subnets 
 resource "aws_subnet" "public" {
-  count = length(data.aws_availability_zones.zones)
+  count = 2
   vpc_id = aws_vpc.main.id
   cidr_block = "10.1.${count.index}.0/24" # 10.1.0.0/24, 10.1.1.0/24
-  availability_zone = data.aws_availability_zones.zones[count.index]
+  availability_zone = data.aws_availability_zones.zones.names[count.index]
   map_public_ip_on_launch = true
 
   tags = {
@@ -54,11 +54,11 @@ resource "aws_subnet" "public" {
 
 # Private Subnets
 resource "aws_subnet" "private" {
-  count = length(data.aws_availability_zones.zones)
+  count = 2
 
   vpc_id = aws_vpc.main.id
   cidr_block = "10.1.${10 + count.index}.0/24"
-  availability_zone = data.aws_availability_zones.zones[count.index]
+  availability_zone = data.aws_availability_zones.zones.names[count.index]
   map_public_ip_on_launch = false
 
   tags = {
@@ -73,7 +73,7 @@ resource "aws_subnet" "private" {
 
 # Elastic IPs for NAT Gateways
 resource "aws_eip" "nat" {
-  count = length(data.aws_availability_zones.zones)
+  count = length(aws_subnet.private)
 
   domain = "vpc"
 
@@ -88,7 +88,7 @@ resource "aws_eip" "nat" {
 
 # NAT Gateways
 resource "aws_nat_gateway" "main" {
-    count = length(data.aws_availability_zones.zones)
+    count = length(aws_subnet.private)
     
     allocation_id = aws_eip.nat[count.index].id
     subnet_id = aws_subnet.public[count.index].id
@@ -104,7 +104,7 @@ resource "aws_nat_gateway" "main" {
 
 # Public Route Table
 resource "aws_route_table" "public" {
-  count = length(data.aws_availability_zones.zones)
+  count = length(aws_subnet.public)
 
   vpc_id = aws_vpc.main.id
 
@@ -125,7 +125,7 @@ resource "aws_route_table" "public" {
 
 # Private Route Table
 resource "aws_route_table" "private" {
-  count = length(data.aws_availability_zones.zones)
+  count = length(aws_subnet.private)
   vpc_id = aws_vpc.main.id
 
   route {
@@ -144,7 +144,7 @@ resource "aws_route_table" "private" {
 
 
 resource "aws_route_table_association" "public" {
-  count = length(data.aws_availability_zones.zones)
+  count = length(aws_subnet.public)
 
   subnet_id = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public[count.index].id
@@ -152,7 +152,7 @@ resource "aws_route_table_association" "public" {
 
 
 resource "aws_route_table_association" "private" {
-  count = length(data.aws_availability_zones.zones)
+  count = length(aws_subnet.private)
 
   subnet_id = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
