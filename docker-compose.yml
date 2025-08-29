@@ -3,7 +3,8 @@ name : "di-airbyte-ec2-with-terraform"
 services:
   airbyte:
     build: .
-    image: airbyte:latest
+    image: airbyte:dev
     container_name: airbyte
     restart: unless-stopped
-  
+    volumes:
+      - .:/projects/di-airbyte-ec2-with-terraform

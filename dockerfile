@@ -22,12 +22,6 @@ RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform
     mv terraform /usr/local/bin/ && \
     rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 
-# Creating the /terraform directory inside the container
-RUN mkdir /terraform
-
-# Copying terraform directory to the /terraform directory in the container
-COPY terraform/ /terraform
-
 # Creating the downloads directory and installing the AWS CLI (to access AWS)
 RUN mkdir downloads && \
     cd downloads && \
@@ -35,6 +29,12 @@ RUN mkdir downloads && \
     unzip awscliv2.zip && \
     rm awscliv2.zip && \
     ./aws/install
+
+# Creating and Setting the working directory
+WORKDIR /projects/di-airbyte-ec2-with-terraform
+
+# Copying terraform directory to the /projects directory in the container
+COPY . .
 
 # Defining the default command to run when the container starts
 CMD ["tail", "-f", "/dev/null"]
