@@ -43,6 +43,14 @@ resource "aws_security_group" "airbyte" {
     cidr_blocks = var.allow_ips
   }
 
+  ingress {
+    description = "Allow Instance Connect"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    prefix_list_ids = ["pl-03915406641cb1f53"]
+  }
+
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
