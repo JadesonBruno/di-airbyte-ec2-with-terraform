@@ -108,7 +108,7 @@ resource "aws_route_table" "public" {
 
   vpc_id = aws_vpc.main.id
 
-  route = {
+  route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
@@ -128,7 +128,7 @@ resource "aws_route_table" "private" {
   count = length(data.aws_availability_zones.zones)
   vpc_id = aws_vpc.main.id
 
-  route = {
+  route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_nat_gateway.main[count.index].id
   }
