@@ -10,7 +10,10 @@ RUN apt-get update && \
         wget \
         unzip \
         curl \
-        vim && \
+        vim  \
+        openssh-client \
+        git \
+        iputils-ping && \
     rm -rf /var/lib/apt/lists/*
 
 # Defining the Terraform version
