@@ -51,6 +51,14 @@ resource "aws_security_group" "airbyte" {
     prefix_list_ids = ["pl-03915406641cb1f53"]
   }
 
+  ingress {
+    description = "Allow all traffic from same security group"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self = true
+  }
+
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
