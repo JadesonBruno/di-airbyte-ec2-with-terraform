@@ -73,7 +73,7 @@ resource "aws_subnet" "private" {
 
 # Elastic IPs for NAT Gateways
 resource "aws_eip" "nat" {
-  count = length(aws_subnet.private)
+  count = length(aws_subnet.public)
 
   domain = "vpc"
 
@@ -88,18 +88,18 @@ resource "aws_eip" "nat" {
 
 # NAT Gateways
 resource "aws_nat_gateway" "main" {
-    count = length(aws_subnet.private)
+  count = length(aws_subnet.public)
     
-    allocation_id = aws_eip.nat[count.index].id
-    subnet_id = aws_subnet.public[count.index].id
-    connectivity_type = "public"
-    
-    tags = {
-        Name = "${var.project_name}-${var.environment}-nat-gw-${count.index + 1}"
-        Project = var.project_name
-        Environment = var.environment
-        Terraform = "true"
-    }
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id = aws_subnet.public[count.index].id
+  connectivity_type = "public"
+  
+  tags = {
+      Name = "${var.project_name}-${var.environment}-nat-gw-${count.index + 1}"
+      Project = var.project_name
+      Environment = var.environment
+      Terraform = "true"
+  }
 }
 
 # Public Route Table
