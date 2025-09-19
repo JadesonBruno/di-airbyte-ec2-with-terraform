@@ -15,39 +15,6 @@ data "aws_ami" "amazon_linux" {
 }
 
 
-# Key Pair for SSH (generates key automatically)
-resource "tls_private_key" "airbyte" {
-  algorithm = "RSA"
-  rsa_bits = 4096
-}
-
-
-# Public Key for EC2 instance
-resource "aws_key_pair" "airbyte" {
-  key_name   = "${var.project_name}-${var.environment}-airbyte-key"
-  public_key = tls_private_key.airbyte.public_key_openssh
-
-  tags = {
-    Name = "${var.project_name}-${var.environment}-airbyte-key"
-    Project = var.project_name
-    Environment = var.environment
-    Service = "airbyte"
-    Terraform = "true"
-  }
-}
-
-
-# Save private key locally
-resource "local_file" "private_key" {
-  content = tls_private_key.airbyte.private_key_pem
-  filename = "${path.root}/keys/${var.project_name}-${var.environment}-airbyte-key.pem"
-
-  provisioner "local-exec" {
-    command = "chmod 400 ${path.root}/keys/${var.project_name}-${var.environment}-airbyte-key.pem"
-  }
-}
-
-
 # Resource for the EC2 instance
 resource "aws_instance" "airbyte-ec2" {
   ami = data.aws_ami.amazon_linux.id
