@@ -1,3 +1,4 @@
+# General Variables
 variable "project_name" {
   description = "The name of the project"
   type = string
@@ -21,12 +22,13 @@ variable "aws_region" {
   default = "us-east-2"
 }
 
-variable "instance_type" {
-  description = "The instance type for the EC2 instance"
-  type = string
-  default = "t3.xlarge"
+variable "allow_ips" {
+  description = "List of IPs allowed to access the Airbyte Web UI"
+  type = list(string)
 }
 
+
+# VPC Variables
 variable "vpc_id" {
   description = "The ID of the VPC"
   type = string
@@ -37,11 +39,16 @@ variable "public_subnet_ids" {
   type = list(string)
 }
 
-variable "allow_ips" {
-  description = "List of IPs allowed to access the Airbyte Web UI"
-  type = list(string)
+
+# Airbyte Variables
+variable "instance_type" {
+  description = "The instance type for the EC2 instance"
+  type = string
+  default = "t3.xlarge"
 }
 
+
+# S3 Staging Area Variables
 variable "staging_area_bucket_arn" {
   description = "The ARN of the S3 bucket used as staging area"
   type  = string

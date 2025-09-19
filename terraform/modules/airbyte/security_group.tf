@@ -1,3 +1,4 @@
+# AWS Security Group for Airbyte EC2 instance
 resource "aws_security_group" "airbyte" {
   name = "${var.project_name}-${var.environment}-airbyte-sg"
   description = "Security group for Airbyte EC2 instance"

@@ -15,13 +15,14 @@ data "aws_ami" "amazon_linux" {
 }
 
 
-# Key Pair para SSH (gera chave automaticamente)
+# Key Pair for SSH (generates key automatically)
 resource "tls_private_key" "airbyte" {
   algorithm = "RSA"
   rsa_bits = 4096
 }
 
 
+# Public Key for EC2 instance
 resource "aws_key_pair" "airbyte" {
   key_name   = "${var.project_name}-${var.environment}-airbyte-key"
   public_key = tls_private_key.airbyte.public_key_openssh
@@ -36,7 +37,7 @@ resource "aws_key_pair" "airbyte" {
 }
 
 
-# Salvar chave privada localmente
+# Save private key locally
 resource "local_file" "private_key" {
   content = tls_private_key.airbyte.private_key_pem
   filename = "${path.root}/keys/${var.project_name}-${var.environment}-airbyte-key.pem"

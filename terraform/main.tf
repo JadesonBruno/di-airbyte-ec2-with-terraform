@@ -1,25 +1,4 @@
-terraform {
-  required_version = ">= 1.10.0"
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-    }
-  }
-
-  backend "s3" {
-    bucket = "di-terraform-states-767397903600"
-    key    = "airbyte-aws-dev/terraform.tfstate"
-    region = "us-east-2"
-    encrypt = true
-  }
-}
-
-
-provider "aws" {
-  region = var.aws_region
-}
-
-
+# VPC Module
 module "vpc" {
   source = "./modules/vpc"
   project_name = var.project_name
@@ -28,6 +7,7 @@ module "vpc" {
 }
 
 
+# Staging Area Module
 module "staging_area" {
   source = "./modules/staging_area"
   project_name = var.project_name
@@ -35,6 +15,7 @@ module "staging_area" {
 }
 
 
+# Airbyte Module
 module "airbyte" {
   source = "./modules/airbyte"
   project_name = var.project_name
