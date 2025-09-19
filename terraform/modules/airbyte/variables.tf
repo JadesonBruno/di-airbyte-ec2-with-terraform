@@ -47,6 +47,12 @@ variable "instance_type" {
   default = "t3.xlarge"
 }
 
+variable "default_user" {
+  description = "The default user for the EC2 instance"
+  type = string
+  default = "ec2-user"
+}
+
 
 # S3 Staging Area Variables
 variable "staging_area_bucket_arn" {

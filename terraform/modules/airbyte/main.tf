@@ -57,6 +57,37 @@ resource "aws_instance" "airbyte-ec2" {
   vpc_security_group_ids = [aws_security_group.airbyte.id]
   iam_instance_profile = aws_iam_instance_profile.airbyte.name
 
+  provisioner "file" {
+    content = templatefile("${path.module}/scripts/user_data.sh", {
+      project_name = var.project_name
+      environment = var.environment
+      hostname = aws_instance.airbyte-ec2.public_dns
+      default_user = var.default_user
+    })
+    destination = "/tmp/setup_airbyte.sh"
+
+    connection {
+      type = "ssh"
+      user = "ec2-user"
+      private_key = tls_private_key.airbyte.private_key_openssh
+      host = self.public_dns
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/setup_airbyte.sh",
+      "sudo /tmp/setup_airbyte.sh"
+    ]
+
+    connection {
+      type = "ssh"
+      user = "ec2-user"
+      private_key = tls_private_key.airbyte.private_key_openssh
+      host = self.public_dns
+    }
+  }
+
   root_block_device {
     volume_type = "gp3"
     volume_size = 50
