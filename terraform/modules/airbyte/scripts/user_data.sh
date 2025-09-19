@@ -52,12 +52,14 @@ fi
 
 # 5. Downloading and installing abctl
 log "Downloading and installing abctl..."
-curl -LsfS https://get.airbyte.com | bash -
 
-# Verifying abctl is installed
-if ! command -v abctl &> /dev/null; then
-    log "ERROR: abctl could not be found"
-    exit 1
+# garantir /usr/local/bin no PATH para shells não-login
+export PATH="/usr/local/bin:$PATH"
+
+# executar instalador e falhar claramente se der errado
+if ! curl -LsfS https://get.airbyte.com | bash -; then
+  log "ERROR: abctl installer failed"
+  exit 1
 fi
 
 # 6. Installing Airbyte
