@@ -143,6 +143,7 @@ resource "aws_route_table" "private" {
 }
 
 
+# Public Route Table Associations
 resource "aws_route_table_association" "public" {
   count = length(aws_subnet.public)
 
@@ -151,6 +152,7 @@ resource "aws_route_table_association" "public" {
 }
 
 
+# Private Route Table Associations
 resource "aws_route_table_association" "private" {
   count = length(aws_subnet.private)
 

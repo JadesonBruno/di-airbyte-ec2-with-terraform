@@ -1,3 +1,4 @@
+# General variables
 variable "project_name" {
   description = "The name of the project"
   type = string
@@ -14,4 +15,3 @@ variable "environment" {
     error_message = "Environment must be one of: dev, staging, prod."
   }
 }
-

@@ -1,3 +1,4 @@
+# General variables
 variable "project_name" {
   description = "The name of the project"
   type = string
@@ -15,6 +16,8 @@ variable "environment" {
   }
 }
 
+
+# VPC Variables
 variable "vpc_cidr_block" {
   description = "The CIDR block for the VPC"
   type = string

@@ -1,3 +1,4 @@
+# IAM Role for Airbyte EC2 instance
 resource "aws_iam_role" "airbyte" {
   name = "${var.project_name}-${var.environment}-airbyte-role"
   description = "IAM role for Airbyte EC2 instance"
@@ -25,6 +26,7 @@ resource "aws_iam_role" "airbyte" {
 }
 
 
+# IAM Policy for Airbyte EC2 instance
 resource "aws_iam_policy" "airbyte" {
   name = "${var.project_name}-${var.environment}-airbyte-policy"
 
@@ -57,12 +59,14 @@ resource "aws_iam_policy" "airbyte" {
 }
 
 
+# Attach the policy to the role
 resource "aws_iam_role_policy_attachment" "airbyte" {
   role = aws_iam_role.airbyte.name
   policy_arn = aws_iam_policy.airbyte.arn
 }
 
 
+# IAM Instance Profile for Airbyte EC2 instance
 resource "aws_iam_instance_profile" "airbyte" {
     name = "${var.project_name}-${var.environment}-airbyte-instance-profile"
     role = aws_iam_role.airbyte.name
