@@ -25,4 +25,5 @@ module "airbyte" {
   public_subnet_ids = module.vpc.public_subnet_ids
   allow_ips = var.allow_ips
   staging_area_bucket_arn = module.staging_area.staging_area_bucket_arn
+  default_user = var.default_user
 }
