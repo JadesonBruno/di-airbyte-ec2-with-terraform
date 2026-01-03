@@ -1,6 +1,6 @@
 # Plataforma de Dados Moderna com Airbyte na AWS
 
-Este projeto provisiona uma plataforma de dados moderna e escalável usando **Airbyte** para integração de dados, implantada na infraestrutura AWS EC2 usando **Terraform**. A infraestrutura inclui uma configuração VPC personalizada, armazenamento de dados de staging e implantação automatizada da instância do  Airbyte com todas as configurações necessárias de rede e segurança.
+Este projeto provisiona uma plataforma de dados moderna e escalável usando **Airbyte** para integração de dados, implantada na infraestrutura AWS EC2 usando **Terraform**. A infraestrutura inclui uma configuração VPC personalizada, armazenamento de dados de staging e **implantação totalmente automatizada** da instância do Airbyte através de provisioners do Terraform, com todas as configurações necessárias de rede, segurança e instalação do software.
 
 ## 🏗️ Visão Geral da Arquitetura
 
@@ -77,98 +77,38 @@ terraform plan
 terraform apply
 ```
 
-### 5. 🚀 Instalação do Airbyte na EC2
+**Nota:** O Terraform irá provisionar automaticamente a instância EC2 e instalar o Airbyte através de provisioners. O processo inclui:
+- Instalação e configuração do Docker
+- Download e instalação do `abctl` (instalador oficial do Airbyte)
+- Instalação do Airbyte configurado com o hostname público da instância
+- Configuração automática de cookies não-seguros para acesso HTTP
 
-Para que o Airbyte funcione corretamente na instância EC2, siga estes passos (execute como `ec2-user` ou o usuário padrão da sua AMI):
+A instalação completa pode levar de 5 a 10 minutos. Você pode monitorar o progresso através dos logs do Terraform.
 
-1. Acesse a pasta da private key:
+### 5. Verificar Instalação
 
-```bash
-cd ../keys
-```
+Para verificar se a instalação foi concluída com sucesso, você pode:
 
-2. Conecte-se à instância EC2 via SSH:
-
-```bash
-ssh -i airbyte-key.pem ec2-user@<IP_PUBLICO>
-```
-
-3. Instale o Docker:
+1. Conectar-se à instância EC2 via SSH:
 
 ```bash
-sudo yum install -y docker
+cd keys
+ssh -i airbyte-key.pem ec2-user@<DNS_PUBLICO>
 ```
 
-4. Adicione o usuário (por exemplo `ec2-user`) ao grupo `docker` para permitir executar Docker sem sudo:
+2. Verificar os logs de instalação:
 
 ```bash
-sudo usermod -a -G docker ec2-user
+sudo tail -f /var/log/airbyte_install.log
 ```
 
-5. Inicie e habilite o serviço Docker para iniciar automaticamente:
+3. Verificar o status dos containers Docker:
 
 ```bash
-sudo systemctl start docker
-sudo systemctl enable docker
+docker ps
 ```
 
-6. Saia da sessão SSH e reconecte-se para que as alterações de grupo entrem em vigor:
-
-```bash
-exit
-ssh -i ec2-user-key.pem ec2-user@<IP_PUBLICO>
-```
-
-7. Baixe e instale o `abctl` (instalador oficial do Airbyte):
-
-```bash
-curl -LsfS https://get.airbyte.com | bash -
-```
-8. Instale o Airbyte usando o `abctl`:
-
-```bash
-abctl local install --host [HOSTNAME]
-```
-
-Notas importantes e flags úteis:
-
-- Host/FQDN: por padrão o instalador configura ingresso apenas para o host local. Para garantir acesso externo ao Airbyte, passe a flag `--host` com o FQDN ou IP público que hospeda o Airbyte. Exemplo:
-
-```bash
-abctl local install --host airbyte.empresa.exemplo
-```
-
-- Porta: o Airbyte ouve na porta 8000 por padrão. Para usar outra porta passe `--port`:
-
-```bash
-abctl local install --port 6598
-```
-
-- Security Group: certifique-se de que o grupo de segurança da instância EC2 permita tráfego de entrada na porta escolhida (8000 por padrão).
-
-- Executando sobre HTTP (inseguro): o Airbyte recomenda configurar TLS. Se você optar por executar via HTTP e entender os riscos, desabilite "Secure Cookies":
-
-```bash
-abctl local install --host [HOSTNAME] --insecure-cookies
-```
-
-Exemplos completos:
-
-```bash
-# Instalar apontando para um IP público
-abctl local install --host 12.34.56.78
-
-# Instalar em um FQDN e porta customizada
-abctl local install --host airbyte.empresa.exemplo --port 6598
-
-# Instalar em HTTP (desabilita cookies seguros)
-abctl local install --host 12.34.56.78 --insecure-cookies
-```
-
-Verificação após instalação:
-
-- Abra no navegador: `http://<HOST>:8000` (ou a porta escolhida)
-- Logs do servidor Airbyte:
+4. Verificar logs do Airbyte:
 
 ```bash
 docker logs airbyte-abctl-control-plane
@@ -216,7 +156,10 @@ Após a conclusão da implantação:
 │           ├── variables.tf
 │           ├── outputs.tf
 │           ├── security_group.tf
-│           └── user_data.sh
+           ├── iam.tf
+           ├── ssh.tf
+           └── scripts/
+               └── user_data.sh    # Script de instalação automatizada
 ```
 
 ## 🔧 Detalhes de Configuração
@@ -291,6 +234,8 @@ Para escalonar a instância:
 ### ✅ Implementadas
 - [x] VPC segura com implantação multi-AZ
 - [x] Provisionamento automatizado EC2 com Airbyte
+- [x] Instalação automatizada do Airbyte via provisioners do Terraform
+- [x] Script de instalação com Docker e abctl configurados automaticamente
 - [x] Área de staging S3 para processamento de dados
 - [x] Grupos de segurança com restrições de IP
 - [x] Gerenciamento de chaves SSH
