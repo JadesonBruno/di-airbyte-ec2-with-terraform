@@ -26,8 +26,6 @@ resource "aws_instance" "airbyte-ec2" {
 
   provisioner "file" {
     content = templatefile("${path.module}/scripts/user_data.sh", {
-      project_name = var.project_name
-      environment = var.environment
       hostname = aws_instance.airbyte-ec2.public_dns
       default_user = var.default_user
     })
